@@ -3,55 +3,66 @@ const poolPromise = require('../config/pool')
 const controllers ={
     getAllPosts: async(req, res)=>{
         let pool = await poolPromise();
-        pool.query(`SELECT * FROM posts`).then(data=>{
+        pool.request()
+        .execute('dbo.spGetAllPosts')
+        .then(data=>{
             if (data.recordset) {
                 return res.status(200).json({
                     Status: 200,
                     Success: true,
-                    Message: 'All users',
+                    Message: 'posts fetched succesfully',
                     Result: data.recordset
                 }) && console.log(data.recordset)
             }
             res.status(404).json({
                 Status: 404,
                 Success: false,
-                Message: 'Users not found',
+                Message: 'post not found',
                 result: []
             })
         })
     },
 
     login: async(req, res)=>{
-        const {email, userName, pwd} = req.body
+        const {email, pwd} = req.body
         let pool = await poolPromise();
-        pool.query(`SELECT * FROM users WHERE email = '${email}' OR userName = '${userName}' AND userPassword = '${pwd}' `)
+        pool.request()
+        .input('email',email)
+        .input('pwd', pwd)
+        .execute('dbo.spLogin')        
         .then(data =>{
-            if (data.recordset) {
-                return res.status(200).json({
-                    status: 200,
-                    Success: true,
-                    Message: 'Login successful',
-                    Result: data.recordset
-                }) &&
-                    console.log(data.recordset)
+            if (data.recordset.length == 0) {
+                res.status(404).json({
+                    Status: 404,
+                    Success: false,
+                    Message: 'Users not found Please signup',
+                    result: []
+                });
+                return;
 
             }
+            res.status(200).json({
+                status: 200,
+                Success: true,
+                Message: 'Login successful',
+                Result: data.recordset
+            }) &&
+                console.log(data.recordset)
 
-            res.status(404).json({
-                Status: 404,
-                Success: false,
-                Message: 'Users not found Please signup',
-                result: []
-            })
         })
+
 
     },
     signup:async(req, res)=>{
-        const{id, userName, email, pwd} = req.body
+        const{ userName, email, pwd} = req.body
         let pool = await poolPromise()
-        pool.query(`INSERT INTO users (userName, email, userPassword) VALUES('${userName}', '${email}', '${pwd}')`)
+        pool.request()
+        .input('userName', userName)
+        .input('email', email)
+        .input('pwd', pwd)
+        .execute('dbo.spSignUp')
         .then(result=>{
-            if (result.rowsAffected) {
+            if (result.rowAffected) {
                 return res.status(200).json({
                     status: 200,
                     Success: true,
@@ -67,13 +78,28 @@ const controllers ={
     },
 
     addPost:async(res, req)=>{
-        const{id} = req.params
         const {post, userID} = req.body
         let pool = await poolPromise()
-        pool.query(`INSERT INTO posts (userID, post) VALUES('${userID}','${post}')`)
-        .then(result=>{
+        pool.request()
+        .input('userId', userID)
+        .input('post', post)
+        .execute('dbo.spAddPost')
+        .then( result =>{
+            if (result.rowsAffected) {
+                return res.status(200).json({
+                    status: 200,
+                    Success: true,
+                    Message: "Post Added Succesfully"
+                }) && console.log("Post Added Succesfully")
+            }   res.status(403).json({
+                status: 404,
+                Success: false,
+                Message: result.recordset
+            })
+        }
 
-        })
+        )
+
     },
 }
 module.exports = { ...controllers }

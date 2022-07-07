@@ -5,8 +5,8 @@ POST http://localhost:3000/user/login
 Content-Type: application/json
 
 {
-    "email": "rtertre0@toplist.cz",
-      "pwd": "wN2rQ3g"
+    "email": "elanegran0@wikia.com",
+      "pwd": "5ai4kZSqquKs"
 }
 ####
 
@@ -14,7 +14,7 @@ POST http://localhost:3000/user/signup
 Content-Type: application/json
 
 {
-    "userName":"lcoltart0",
-    "email":"cnulty0@scientificamerican.com",
-    "userPassword":"dVRMYcx"
+    "userName":"lcoltart0ry",
+    "email":"cnurrlty0@scientificamerican.com",
+    "pwd":"dVRMYcxr"
 }
