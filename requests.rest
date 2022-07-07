@@ -18,3 +18,29 @@ Content-Type: application/json
     "email":"cnurrlty0@scientificamerican.com",
     "pwd":"dVRMYcxr"
 }
+#####
+
+POST http://localhost:3000/user/addPost
+Content-Type: application/json
+
+{
+    "userID":"77",
+    "post":"Working from Node"
+}
+####
+POST http://localhost:3000/post/addComment
+Content-Type: application/json
+
+{
+    "userID": 7,
+    "postID": 8,
+    "comment":"Working from Node"
+}
+####
+POST http://localhost:3000/post/addReply
+Content-Type: application/json
+
+{
+    "commentID": 8,
+    "comment":"Working from Node"
+}
